@@ -19,6 +19,7 @@ function RadioGroup({check, handleChange }) {
       </div>
       <div className="form-check">
         <input
+        onChange={handleChange}
           onClick={handleChange}
           className="form-check-input"
           type="radio"
