@@ -2,7 +2,7 @@ import React from "react";
 
 function RadioGroup({check, handleChange }) {
   return (
-    <div>
+    <div className="col-1 ">
       <div className="form-check">
         <input
         onChange={handleChange}
@@ -11,10 +11,10 @@ function RadioGroup({check, handleChange }) {
           type="radio"
           name="radio"
           id="mala"
-          checked={check==="mala"}
+          checked={check==="malá"}
         />
         <label className="form-check-label" htmlFor="flexRadioDefault1">
-          mala
+          malá
         </label>
       </div>
       <div className="form-check">
@@ -25,10 +25,10 @@ function RadioGroup({check, handleChange }) {
           type="radio"
           name="radio"
           id="velka"
-          checked={check==="velka"}
+          checked={check==="velká"}
         />
         <label className="form-check-label" htmlFor="flexRadioDefault2">
-          velka
+          velká
         </label>
       </div>
     </div>

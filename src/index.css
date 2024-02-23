@@ -11,5 +11,6 @@ body {
   width: 400px;
   background-color: rgb(174, 198, 233);
   padding: 1rem;
+  border-radius: 1rem;
 }
  

@@ -8,40 +8,38 @@ import FormSec from "./components/FormSec";
 import RadioGroup from "./components/RadioGroup";
 
 function App() {
-  const [fish, setFish] = useState(data.fish);
-  const [pageToShow, setPageToShow] = useState("btn-prvni");
+  const [fish, setFish] = useState(data.fish); //seznam ryb
+  const [pageToShow, setPageToShow] = useState("btn-prvni"); //ktera stranka se zobrazi
+  const requirementforSmallFish = 10; // min litru pro malou rybu
+  const requirementforBigFish = 20; // min litru pro velkou rybo
   const [newFish, setNewFish] = useState({
+    //pridani nove ryby
     id: fish.length > 0 ? Math.max(...fish.map((f) => f.id)) + 1 : 0,
     name: "",
-    breed: "",
+    kind: "",
   });
 
-  const [sizeOfFish, setSizeOfFish] = useState("mala");
-  const [validationOfNewDog, setValidationOfNewFish] = useState(false);
-  const [validationOfAquarium, setValidationOfAquarium] = useState(false);
-  const [sizeOfAquarium, setSizeOfAquarium] = useState({
-    w: 0,
-    l: 0,
-    h: 0,
-  });
+  const [sizeOfFish, setSizeOfFish] = useState("malá"); //velikost ryby checkboxy
+  const [validationOfNewFish, setValidationOfNewFish] = useState(false); //button pridani nove ryby
+  const [validationOfAquarium, setValidationOfAquarium] = useState(false); //button schvaleni akvaria
 
   const [addSize, setAddSize] = useState({
+    //velikost akvaria
     w: 0,
     l: 0,
     h: 0,
   });
 
- 
-
-  const [colorOfBtn, setcolorOfBtn] = useState("btn btn-success");
-  const [sizeAquarium, setSizeAquarium] = useState(0);
-  const [smallFish,setSmallFish]=useState(0)
-  const [bigFish,setBigFish]=useState(0)
+  const [colorOfBtn, setcolorOfBtn] = useState("btn btn-danger"); //barva button schvalit akvarium
+  const [sizeAquarium, setSizeAquarium] = useState(0); //velikost akvaria
+  const [smallFish, setSmallFish] = useState(0); //pocet malych ryb
+  const [bigFish, setBigFish] = useState(0); //pocet velkych ryb
 
   // klikani na button
   const handleClick = (id, idOfFish) => {
     switch (id) {
       case "btn-delete": {
+        //vymazat rybu
         const filtred = fish.filter((f) => {
           return f.id !== idOfFish;
         });
@@ -49,53 +47,27 @@ function App() {
         break;
       }
       case "btn-prvni": {
+        //zobraz stranku seznam ryb
         setPageToShow("btn-prvni");
 
         break;
       }
       case "btn-druhy": {
+        //zobraz stranku akvarium
         setPageToShow("btn-druhy");
         break;
       }
       case "btn-add": {
+        //pridat novou rybu
         setFish((fish) => {
           return [...fish, newFish];
         });
         setNewFish({
           id: newFish.id + 1,
           name: "",
-          breed: "",
+          kind: "",
         });
         setValidationOfNewFish(false);
-
-        break;
-      }
-      case "btn-add-supply": {
-        const temp = {
-          w: parseInt(addSize.w),
-          l: parseInt(addSize.l),
-          h: parseInt(addSize.h),
-        };
-        setSizeOfAquarium(temp);
-    
-        const pocetMalych = fish.filter((f) => {
-          return f.breed === "mala";
-        });
-        const pocetVelkych = fish.filter((f) => {
-          return f.breed === "velka";
-        });
-        let sizeOfAquarium = temp.w * temp.l * temp.h;
-        sizeOfAquarium = sizeOfAquarium / 1000;
-        const requirement = pocetMalych.length * 10 + pocetVelkych.length * 20;
-        setSizeAquarium(sizeOfAquarium);
-        console.log(requirement);
-
-        console.log(sizeOfAquarium);
-        if (sizeOfAquarium - requirement >= 0) {
-          setcolorOfBtn("btn btn-success");
-        } else {
-          setcolorOfBtn("btn btn-danger");
-        }
 
         break;
       }
@@ -105,48 +77,69 @@ function App() {
     }
   };
 
-  
-
   // pridani nove ryby//////////////////////////////////////////////////////////
   const handleDataForm1 = (event) => {
     const tempNewFish = {
       ...newFish,
       [event.target.id]: event.target.value,
-      breed: sizeOfFish,
+      kind: sizeOfFish,
     };
 
-    setValidationOfNewFish(validationDog(tempNewFish));
+    setValidationOfNewFish(validationFish(tempNewFish));
     setNewFish(tempNewFish);
-
- 
   };
 
+  // schvaleni akvaria pri zadavani do inputboxu ///////////////////////////////////
   const handleDataForm2 = (event) => {
     const tempSize = {
       ...addSize,
       [event.target.id]: event.target.value,
     };
-    setAddSize(tempSize);
- 
-    
+    setAddSize(tempSize); //ulozeni novych rozmeru
+    const temp = {
+      w: parseInt(tempSize.w),
+      l: parseInt(tempSize.l),
+      h: parseInt(tempSize.h),
+    };
+
+    let sizeOfAquarium = temp.w * temp.l * temp.h; //objem akvaria
+    sizeOfAquarium = sizeOfAquarium / 1000; //prevod na litry
+
+    const requirement =
+      smallFish * requirementforSmallFish +
+      bigFish * requirementforBigFish; //dovoleny objem na rybu
+  
+    setSizeAquarium(sizeOfAquarium);//objem akvaria
+
+    colorOfButton(sizeOfAquarium, requirement);//kontrola objemu na rybu
+
+    setValidationOfAquarium(sizeOfAquarium >= 1);//objem je vetsi nez 1l pro aktivaci tlacitka
   };
 
-  const handleRadio = (event) => {
+  const colorOfButton = (size, requirement) => {//barva schvalovaciho tlacitka
+    if (size - requirement >= 0) {
+      setcolorOfBtn("btn btn-success");
+    } else {
+      setcolorOfBtn("btn btn-danger");
+    }
+  };
+
+  const handleRadio = (event) => {// checkboxy mala velka
     switch (event.target.id) {
       case "mala": {
-        setSizeOfFish("mala");
-        const tempNewDog = { ...newFish, breed: "mala" };
+        setSizeOfFish("malá");
+        const tempNewFish = { ...newFish, kind: "malá" };
 
-        setValidationOfNewFish(validationDog(tempNewDog));
-        setNewFish(tempNewDog);
+        setValidationOfNewFish(validationFish(tempNewFish));
+        setNewFish(tempNewFish);
         break;
       }
 
       case "velka": {
-        setSizeOfFish("velka");
-        const tempNewFish = { ...newFish, breed: "velka" };
+        setSizeOfFish("velká");
+        const tempNewFish = { ...newFish, kind: "velká" };
 
-        setValidationOfNewFish(validationDog(tempNewFish));
+        setValidationOfNewFish(validationFish(tempNewFish));
         setNewFish(tempNewFish);
         break;
       }
@@ -156,32 +149,21 @@ function App() {
     }
   };
 
-  const validationDog = (dogToAdd) => {
-    return dogToAdd.name.trim().length > 0;
+  const validationFish = (fishToAdd) => {//prazdne policko pro zadani jmena ryby
+    return fishToAdd.name.trim().length > 0;
   };
 
   useEffect(() => {
-    const temVal = () => {
-      return (
-        addSize.w >= 10 && addSize.l >= 10 && addSize.h >= 10
-      );
-    };
-    setValidationOfAquarium(temVal);
-    // console.log(addToSupply);
-  }, [addSize]);
+    const numberOfSmall = fish.filter((f) => {//spocitani malych a velkych ryb
+      return f.kind === "malá";
+    });
 
+    const numberOfBig = fish.filter((f) => {
+      return f.kind === "velká";
+    });
  
-
-  useEffect(() => {
-
-    const pocetMalych = fish.filter((dog) => {
-      return dog.breed === "mala";
-    });
-    const pocetVelkych = fish.filter((dog) => {
-      return dog.breed === "velka";
-    });
-    setBigFish(pocetVelkych.length)
-    setSmallFish(pocetMalych.length)
+    setSmallFish(numberOfSmall.length);
+    setBigFish(numberOfBig.length);
   }, [fish]);
 
   return (
@@ -200,38 +182,45 @@ function App() {
           handleClick={handleClick}
         ></Button>
       </div>
+      {/* seznam rybicek/////////////////////////////////// */}
       {pageToShow === "btn-prvni" && (
         <>
-        <hr />
+          <hr />
           <ListToShow
             id="btn-delete"
             handleClick={handleClick}
             dataIn={fish}
           ></ListToShow>
           <hr />
-          <Form
-            id="btn-add"
-            dataIn={newFish}
-            handleData={handleDataForm1}
-            handleClick={handleClick}
-            validation={!validationOfNewDog}
-          ></Form>
-          <div className="d-flex justify-content-center">
-            <RadioGroup
-              check={sizeOfFish}
-              handleChange={handleRadio}
-            ></RadioGroup>
+          <div className="row">
+            <Form
+              id="btn-add"
+              dataIn={newFish}
+              handleData={handleDataForm1}
+              handleClick={handleClick}
+              validation={!validationOfNewFish}
+            ></Form>
+            <div className="col-3">
+              <RadioGroup
+                check={sizeOfFish}
+                handleChange={handleRadio}
+              ></RadioGroup>
+            </div>
           </div>
         </>
       )}
+      {/* akvarium //////////////////////////////////////////////////////// */}
       {pageToShow === "btn-druhy" && (
         <>
+          <hr />
           <h2>Návrh akvária</h2>
+          <hr />
           <h4>Objem akvária: {sizeAquarium} l</h4>
-          <h4>Počet rybiček: {fish.length} ks</h4>
-          <h4>Počet malých rybiček: {smallFish} ks</h4>
-          <h4>Počet velkých rybiček: {bigFish} ks</h4>
-
+          <hr />
+          <h5>Počet rybiček: {fish.length} ks</h5>
+          <h5>Počet malých rybiček: {smallFish} ks</h5>
+          <h5>Počet velkých rybiček: {bigFish} ks</h5>
+          <hr />
           <FormSec
             id="btn-add-supply"
             validation={!validationOfAquarium}

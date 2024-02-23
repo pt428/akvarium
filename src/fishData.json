@@ -2,21 +2,16 @@
     "fish": [
         {
             "id": 1,
-            "name": "Kapr",
-            "breed": "mala"
+            "name": "Skalár",
+            "kind": "velká"
           
         },
         {
             "id": 2,
-            "name": "Štika",
-            "breed": "velka"
+            "name": "Neonka",
+            "kind": "malá"
             
-        },
-        {
-            "id": 3,
-            "name": "Cejn",
-            "breed": "mala"
-            
-        } 
+        }
+        
     ]
 }
